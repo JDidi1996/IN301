@@ -3,22 +3,19 @@
 int main()
 {
 	
-	int n = 4;
-	int i, e, som;	// e = epsilon
-	int S[n];
-	
-	e = n/3;
-	som = 0;
+	int n = 2;
+	int i, som = 0;
 	i = 1;
 	
-	while ( fabs(S[n+1] - S[n] < e)
+	while ( i < n)
 	{
-		S[i] = 1/(i*i);
-		som = som + S[i];
+		som = som + 1/(i*i);
+		i++;
+		
 		
 	}
 	
-	
+	printf(" La limite de la suite Sn est %d", som);
 	
 	
 }
