@@ -2,7 +2,7 @@
 
 
 int i; 
-int test(int n)
+int test(int n)	// Test si un nombre est premier ou non
 {
 	for ( i = 2; i < n; i++ )
 	{
@@ -12,6 +12,7 @@ int test(int n)
 		}
 			
 	}
+	return 0;
 }
 
 int main()
