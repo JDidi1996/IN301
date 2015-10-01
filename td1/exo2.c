@@ -37,6 +37,8 @@ int main()
 	m = minute(n);
 	s = seconde(n);
 	
+	// Accord du pluriel
+	
 	if ( h > 1 ) hp = 's';
 	else 		 hp = ' ';
 	
