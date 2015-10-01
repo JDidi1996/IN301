@@ -101,30 +101,36 @@ void Double_Neg( int *T) // Supprime les valeurs double ( ou plus) positives en 
 	
 }
 
-int Moyenne_Section(int *T) // Calcul la moyenne des produits de chaque section
+int Moyenne_Section(int *T, int n) // Calcul la moyenne des produits de chaque section
 {
 	int m, s; // S = nombre de section
-	int mtmp; //m temporaire
+	int mtmp; //m temporaire (contient le produit d'une section)
 	int i;
-	s = 1;
+	i = 0;
 	m = 0;
-	mtmp = 1;
+	s = 1; // Il y a au moins une section
 	
-	for ( i = 0; i < N; i++) // Avec T[0] != 0
+	while ( i < n)
 	{
-		if ( (*(T+i) == 0) && (*(T+i-1) != 0 ) ) 
-		{
-			s++;
-			m = m + mtmp;
-			mtmp = 1;
-		}
-		else 
-		{
-			mtmp = mtmp*(*(T+i));
-		}
+		if (*(T+i) != 0)mtmp = 1;
+		else mtmp = 0; 
+		
+		while ( (*(T+i) != 0) && (i < n)) // Produit d'une section
+			{
+				mtmp = mtmp * (*(T+i));
+				i++;
+		
+			}
+			
+		m = m + mtmp;
+		
+		if ( (*(T+i) == 0) && (*(T+i+1) != 0) ) s = s + 1; // Calcul le nombre de sections
+		
+		i++;
 	}
 	
 	m = m/s;
+	printf( " S vaut %d \n", s);
 	
 	return m;
 }
@@ -138,24 +144,14 @@ int main()
 	
 	T[4] = 4;
 	T[5] = 0;
-	
-	for ( i = 0; i < N; i++)
-	{
-		printf("Le produit des éléments du tableau est : %d \n", T[i]); 
-	}
-	
-	InsererElement(T,5); 
-	Double_Neg(T);
-	
-	for ( i = 0; i < N; i++)
+	T[9] = 0;
+		
+	for ( i = 0; i < 10; i++)
 	{
 		printf("%d \n", T[i]); 
 	}
 	
-	printf("La moyenne des sections est %d \n", Moyenne_Section(T));
-	
-	
-	
+	printf("La moyenne des sections est %d \n", Moyenne_Section(T, N));
 	
 	
 }
