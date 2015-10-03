@@ -30,9 +30,9 @@ int main()
 		else           // Pour X impair
 		{
 			X = (X-1);
-			printf ( "= %d x %d + %d \n",X, Y, Y);
-			
 			y = y + Y;
+			printf ( "= %d x %d + %d \n",X, Y, y);
+			
 			
 			
 		}
