@@ -3,19 +3,20 @@
 int main()
 {
 	
-	int n = 2;
-	int i, som = 0;
-	i = 1;
-	
-	while ( i < n)
-	{
-		som = som + 1/(i*i);
-		i++;
+	double i, s;
+	double p; //precision
+
+	s = 1; // Sn
+	p = 0,001;
 		
+	i = 1;	
+	while (  (1/(i*i)) >	 p )
+	{
+		i++ ;
+		s = s + (1/(i*i));
 		
 	}
 	
-	printf(" La limite de la suite Sn est %d", som);
-	
+	printf(" La limite de la suite Sn est %f",s);
 	
 }
