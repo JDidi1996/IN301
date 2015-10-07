@@ -1,60 +1,53 @@
 #include "stdio.h"
-int n,m;
 
-int somme_n()
+
+int somme(int n)
 {
 	int i;
-	int sn;
+	int s;
+	s = 0;
+	
 	for ( i = 1; i < n; i++ )
 	{
 		if ( (n%i) == 0 )
 		{
-			sn = sn + i;
-			printf( "Sn = %d \n",sn);
+			s = s + i;
 		}
 			
 	}
-	return sn;
-}
-
-int somme_m()
-{
-	int i;
-	int sm;
-		for ( i = 1; i < m; i++ )
-	{
-		if ( (m%i) == 0 )
-		{
-			sm = sm + i;
-			printf( "Sm = %d \n",sm);
-		}
-			
-	}
-	
-	return sm;
+	return s;
 }
 
 int amis(int n, int m)
 {
 	int sn, sm; //somme des div de n et somme des div de m
 	int i;
-	sn = 0;
-	sm = 0;
-	
-	
+	sn = somme(n);// Somme de tout les diviseurs de n sauf lui meme
+	sm = somme(m);// Somme de tout les diviseurs de m sauf lui meme
 
-	if ( sn == sm ) {return 1;}
+	if ( (sn == m) && (sm == n) ) {return 1;}
 	else 			return 0;
+}
+
+void couple_amis(int nmax)
+{
+	int i, j;
+	
+	for (i = 0; i <= nmax; i++)
+	{
+		for (j = i; j <= nmax; j++)
+		{
+			if ( amis( i, j) == 1 ) printf(" %d et %d sont amis \n", i, j); // i = n, et j = m avec n <= m <= nmax
+		}
+	}
+	
+	
 }
 
 int main()
 {
 	
-	n = 220; 
-	m = 284;
-	
-	if ( amis(n, m) == 1) printf("Les entier m et n sont dits amis \n");
-	else 				  printf("Les entier m et n ne sont pas dits amis \n");
+	couple_amis(3300);
 	
 	
 }
