@@ -121,10 +121,7 @@ int main()
 	reinitPointeur(&q);
 	printf(" q = %p \n", q);
 	
-	
-	
-	
-	
+
 
 	return 0;	
 }
