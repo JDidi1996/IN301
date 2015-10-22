@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct Element
 {
@@ -9,6 +10,8 @@ struct Element
 typedef struct Element Element; 
 
 typedef Element* liste;
+
+
 
 liste init_liste()// Création d'une liste vide
 {
@@ -29,6 +32,8 @@ void affiche_liste(liste l) // Affiche les valeurs de la liste
 		printf(" %d ->",l->val);
 		l = l->suiv;
 	}
+	printf(" NULL");
+	printf(" \n");
 }
 
 void liberer_memoire(liste l)
@@ -156,59 +161,130 @@ liste concat(liste l1, liste l2)
 	return l;
 }
 
+liste alea_liste( int n)
+{
+		int x;
+		liste l = init_liste();
+		
+		srand(time(0));
+		while (1)
+		{
+			x = rand()%n;
+			if ( x == 0) return l;
+			else l = ajout_debut(l, x);
+			
+		}
+		return l;
+}
+
 liste entrelacer(liste l1, liste l2) // Entrelacement de deux tableaux triées
 {
-	liste l;
+	liste l3,l4;
 	
-			
 	if ( l1 == NULL ) return l2;
 	if ( l2 == NULL ) return l1;
+	
+	if ( l1->val < l2->val)
+		{
+			l3 = l1;
+			l1 = l1->suiv;
+		}
+		else
+		{
+			l3 = l2;
+			l2 = l2->suiv;
+		}
+	
+	l4 = l3;
 	
 	while( (l1 != NULL) && (l2 != NULL) )
 	{
 		if ( l1->val < l2->val)
 		{
-			l->val = l1->val;
-			l = l->suiv;
+			l3->suiv = l1;
+			l3 = l3->suiv;
 			l1 = l1->suiv;
+			affiche_liste(l4);
 		}
 		else
 		{
-			l->val = l2->val;
-			l = l->suiv;
+			
+			l3->suiv = l2;
+			l3 = l3->suiv;
 			l2 = l2->suiv;
+			affiche_liste(l4);
 		}
 	}
 	
-	if ( l2 == NULL) l->suiv = l1;
-	if ( l1 == NULL) l->suiv = l2;
+	if ( l2 == NULL)  l3->suiv = l1;
+	if ( l1 == NULL)  l3->suiv = l2;
+	
+	return l4;
+}
+
+liste tri_liste_bulle(liste l)
+{
+	liste temp;
+	int tp, compt;
+	compt = 0;
+	temp = l;
+	
+	if ( (l == NULL) || (l->suiv == NULL)) return l;
+	
+	while ( compt != nb_element(l))
+	{
+		temp = l;
+		compt =  1;
+		
+		while ( (temp != NULL) && (temp->suiv != NULL))
+		{
+			if ( temp->suiv->val < temp->val)
+			{
+				tp = temp->suiv->val;
+				temp->suiv->val = temp->val;
+				temp->val = tp;
+				
+			}
+			else compt += 1;
+			temp = temp->suiv;
+			
+		}
+	}
+	
 	return l;
+}
+
+liste renverse(liste l1)
+{	
+	liste l2;
+	l2 = init_liste();
+	
+	if ( (l1 == NULL) || (l1->suiv == NULL)) return l1;
+	
+	while ( l1 != NULL)
+	{
+		l2 = ajout_debut(l2,l1->val);
+		l1 = l1->suiv;
+	}
+	
+	return l2;
+
 }
 
 int main()
 {
-	liste l, p, j;
-	j = malloc(sizeof(Element));
-	
-	l = init_liste();
-	l = ajout_fin(l, 1);
-	l = ajout_fin(l, 3);
-	l = ajout_fin(l, 5);
-	l = ajout_tri(l, 0);
-	affiche_liste(l);
-	
-	printf(" \n");
+	liste p;
+	srand(time(0));
 		
 	p = init_liste();
-	p = ajout_fin(p, 0);
-	p = ajout_fin(p, 2);
-	p = ajout_fin(p, 4);
+	p = alea_liste(4);
 	affiche_liste(p);		
 	
 	printf(" \n");
 	
-	j = entrelacer(l, p);
-	affiche_liste(j);
+	p = tri_liste_bulle(p);
+	affiche_liste(p);
+
 	
 	return 0;
 }
