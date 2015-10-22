@@ -94,13 +94,12 @@ tableau Tri_tab(tableau T)// Tri le tableau
 	return T;
 }
 	
-tableau Inserer(tableau T, int e) // Insere un élément dans un tableau trié (bug quand e > 20)
-{
-	int j, i;
+tableau Inserer(tableau T, int e) // Insere un élément dans un tableau trié
+{	int j, i;
 	j = 0;
 	
 	
-	while( e > T.tab[j])
+	while( (e > T.tab[j]) && (j < T.taille))
 	{
 		j++;
 	}
@@ -110,6 +109,7 @@ tableau Inserer(tableau T, int e) // Insere un élément dans un tableau trié (
 		T.tab[i] = T.tab[i-1];
 	}
 	T.taille = T.taille + 1;
+	
 	T.tab[j] = e;
 	
 	
@@ -130,7 +130,77 @@ tableau Inverse(tableau T) // Inverse les éléments du tableau
 	return T;
 }
 
+tableau sup_alea(tableau T)
+{
+	int i, s; // Correspond à l'indice de l'élément à supprimer
+	
+	s = alea(T.taille);
+	
+	for ( i = s; i < (T.taille) ; i ++)
+	{
+		T.tab[i] = T.tab[i+1];
+	}
+	T.taille -= 1;
 
+	return T;
+	
+}
+
+tableau sup_double(tableau T) // Supprime les éléments en double ( à revoir)
+{
+	int i, j, k;
+	for ( i = 0; i < (T.taille) ; i ++)
+	{
+		for ( j = i+1; j < (T.taille) ; j ++)
+		{
+			if ( T.tab[i] == T.tab[j] )
+			{
+				for (k = j; k <= T.taille - 1 ; k++)
+				{
+				T.tab[k] = T.tab[k+1];
+				}
+			
+			T.taille -= 1;	
+			}
+		}
+	}
+	
+	return T;
+}
+
+tableau tri_bulle(tableau T) // tri par permutation ( ou tri à bulle)
+{
+	int i, j, tmp;
+	
+	for ( i = 0; i < T.taille; i++)
+	{
+		for ( j = T.taille- 1; j > i ; j--)
+		{
+			if ( T.tab[j-1] > T.tab[j] )
+			{
+				tmp = T.tab[j-1];
+				T.tab[j -1] = T.tab[j];;
+				T.tab[j] = tmp;
+			}
+		}
+	}
+	
+	
+	return T;
+}
+
+tableau tri_insertion(tableau T) // Tri par insertion
+{
+	int i, j, tmp;
+	
+	for ( i =0; i < T.taille ; i ++)
+	{
+		
+		
+	}	
+	
+	return T;
+}
 
 int main()
 {
@@ -141,13 +211,10 @@ int main()
 	tableau T;
 	
 	T = init_tab(T);
-	T = Tri_tab(T);
 	affiche_tab(T); // Affichage du tableua après le tri
-	
-	printf("Le produit des éléments du tableau est %lld \n",produit(T)); 
-	
-	T = Inserer(T, 13);
-	T = Inverse(T);
+
+	printf(" Deuxième : \n");
+	T = tri_bulle(T);	
 	affiche_tab(T); // Affichage du tableau après l'insertion de l'élément
 	
 	
