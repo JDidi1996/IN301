@@ -2,50 +2,81 @@
 #include <stdlib.h>
 #include <math.h>
 
-int Pascale(int n, int p)
+struct element{ 
+	int val;
+	struct element *suiv;
+};
+typedef struct element *liste;
+
+struct element2{
+	liste val;
+	struct element2 *suiv;
+};
+typedef struct element2 *lliste;
+
+int somme(liste l)
 {
-	if ( (p == 0) || (p == n) ) return 1;
-	else return Pascale(n-1, p) + Pascale(n-1, p-1);
+	if (l == NULL) return 0;
+	else 		   return l->val + somme(l->suiv);
 }
 
-int pivot( int* tab, int g, int d)
+int occurence(liste l, int e)
 {
-	int m;
-	m = (g+d)/2;
-	
-	if ((tab[m] <= tab[m+1]))  pivot ( tab, m+1,d);
-	else  pivot ( tab, g,m);
+	if (l == NULL) return 0;
+	if (l->val == e) return 1 + occurence(l->suiv,e);
+	else return occurence(l->suiv, e);
 }
 
-int controle(double n)
+
+
+liste supprimer(liste l, int e)
 {
-	int x;
-	double i, j;
+	liste tmp,p;
+	p = l;
 	
-	x = 0;
-	for ( i = 0; i <= n ; i++)
+	if ( l == NULL) return p;
+	if ( l->val == e)
 	{
-	j = pow(2,i);
-	printf("j = %f", j);
-	while ( j <= pow(2,n-i))
-		{
-			j = j+1;
-			x = x+1;
-			
-		}	
+		tmp = l->suiv;
+		free(l);
+		l = tmp;
+		l = supprimer(l,e);
+		
 	}
-	return x;
-	
+	else
+	l->suiv = supprimer(l->suiv, e);
+	return p;
 }
 
+
+
+void afficheListe(liste l)
+{
+while ( l != NULL)
+	{
+		printf(" %d ->",l->val); // affiche : |le numero de la requete| priorité de la requete|
+		l = l->suiv;
+	}
+	printf(" NULL \n");	
+}
+
+int valMax(liste l)
+{
+	int n;
+	if ( l == NULL) return 0;
+	n = valMax(l->suiv);
+	if ( n < l->val) return n;
+	else return l->val;
+	
+}
 
 int main()
 {
- 
-int res;
+	int res;
+	liste l = NULL;
+	res = valMax(l);
+	printf("%d", res);
 
-res = controle(2);
-printf("res = %d",res);
-
-return 0;
+	
+	return 0;
 }
