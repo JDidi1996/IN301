@@ -144,6 +144,26 @@ liste supprime(liste l, int e)
 	return l;
 }
 
+liste supprime2(liste l, int e)
+{
+	liste p, tmp;
+	p = l;
+	
+	if ( l == NULL) return l;
+	while ( (l != NULL) && (l->suiv != NULL))
+	{
+		if ( l->suiv->val == e)
+		{
+			tmp = l->suiv->suiv;
+			free(l->suiv);
+			l = tmp;
+		}
+		else
+		l = l->suiv;
+	}
+	return p;
+}
+
 liste concat(liste l1, liste l2)
 {
 	liste l;
@@ -282,7 +302,7 @@ int main()
 	
 	printf(" \n");
 	
-	p = tri_liste_bulle(p);
+	p = supprime2(p,3);
 	affiche_liste(p);
 
 	
