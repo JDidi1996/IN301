@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "graphics.h"
 
 
@@ -221,9 +219,33 @@ PLATEAU jouer_1(JOUEUR *J, PLATEAU P)
 		if ( ((x == (*J).i+2) && (y == (*J).j) && (P.pos[(*J).i+1][y] != 1)) || ((x == (*J).i -2) && (y == (*J).j) && (P.pos[(*J).i-1][y] != 1)) 
 			|| ((y == (*J).j -2) && (x == (*J).i) && (P.pos[x][(*J).j-1] != 1)) || ((y == (*J).j +2) && (x == (*J).i) && (P.pos[x][(*J).j+1] != 1)) )
 		{
-			if ( P.pos[x][y]  == 3)
+			if ( (x == (*J).i+2) && (y == (*J).j) && (P.pos[x][y]  == 3) && (P.pos[x+1][y] != 1))
 			{
-			;
+			P.pos[x+2][y] = (*J).val;
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i += 4; (*J).j = y;
+			coup = 0;
+			}
+			if ( (x == (*J).i-2) && (y == (*J).j) && (P.pos[x][y]  == 3) && (P.pos[x-1][y] != 1))
+			{
+			P.pos[x-2][y] = (*J).val;
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i -= 2; (*J).j = y;
+			coup = 0;
+			}
+			if ( (x == (*J).i) && (y == (*J).j+2) && (P.pos[x][y]  == 3) && (P.pos[x][y+1] != 1))
+			{
+			P.pos[x][y+2] = (*J).val;
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i = x; (*J).j = y+2;
+			coup = 0;
+			}
+			if ( (x == (*J).i+2) && (y == (*J).j-2) && (P.pos[x][y]  == 3) && (P.pos[x][y-1] != 1))
+			{
+			P.pos[x][y-2] = (*J).val;
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i = x; (*J).j = y-2;
+			coup = 0;
 			}
 			else
 			{
@@ -314,26 +336,38 @@ ListeP init_liste(ListeP *l)
 // car cela prend moins de temps puis pour le retour en arrière 
 // on supprime le plateau en debut de liste et on va sur la plateau 
 // suivant qui correspond au tour précedent.
-ListeP ajoutDebut(ListeP l, PLATEAU P)		
+ListeP ajoutFin(ListeP l, PLATEAU P)		
 {
-	ListeP a = malloc(sizeof(struct element));
-	if ( a.debut == NULL)
+	Liste a = malloc(sizeof(struct element));
+	if ( l.debut == NULL)
 	{
+	l.debut->plt = P;
+	l.debut->suiv = NULL;
+	l.debut->prec = NULL;
+	l.fin = l.debut;
+	return l;
 	
 	}
 	else
 	{
 	a->plt = P;
-	a->suiv = l.debut;
-	a->prec = NULL;
-	l.debut = a;
-	}
+	a->suiv = NULL;
+	a->prec = l.fin;
+	l.fin = a;
 	return l;
+	}
 }
 
-ListeP supprimeDebut(ListeP l)
+ListeP supprimeFin(ListeP l)
 {
-	
+	if (l.fin == NULL) return l;
+	else
+	{
+		l.fin = l.fin->prec;
+		l.fin->suiv = NULL;
+		free(l.fin);
+		return l;
+	}
 }
 
 
