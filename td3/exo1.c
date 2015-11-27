@@ -5,7 +5,7 @@
 
 /*
 
-int main( int argc, char** argv) // char** argv est un tableaud e CHAINE de caractère.
+int main( int argc, char** argv) // char** argv est un tableau de CHAINE de caractère.
 {
 int i;
 for(i=0; i<argc; i++)
