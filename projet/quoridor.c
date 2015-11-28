@@ -22,20 +22,16 @@ typedef struct joueur
 typedef struct element{
   PLATEAU plt;
   struct element *suiv;
-  struct element *prec;
 }*Liste;
 
-typedef struct listeP{
-	Liste debut;
-	Liste fin;
-}ListeP;
+Liste l;
 
 //## Affichage des murs ##//
 void afficheMur_h(int i, int j)
 {
 	POINT p1, p2;
 	
-	p1.x = 70*((i/2)+(i%2)); p2.x = 70*(((i/2)+(i%2))+1);
+	p1.x = 70*((i/2)+(i%2)); p2.x = 70*(((i/2)+(i%2))+1) -10;
 	p1.y = 70*((j/2)+(j%2))-1; p2.y = 70*((j/2)+(j%2)) -9;
 	draw_fill_rectangle(p1,p2,rouge);
 }
@@ -45,7 +41,16 @@ void afficheMur_v(int i, int j)
 	POINT p1, p2;
 	
 	p1.x = 70*((i/2)+(i%2))-1; p2.x = 70*((i/2)+(i%2)) -9;
-	p1.y = 70*((j/2)+(j%2)); p2.y = 70*((j/2)+(j%2) + 1);
+	p1.y = 70*((j/2)+(j%2)); p2.y = 70*((j/2)+(j%2) + 1) -10;
+	draw_fill_rectangle(p1,p2,rouge);
+}
+
+void afficheMur_c(int i, int j)
+{
+	POINT p1, p2;
+	
+	p1.x = 70*((i/2)+(i%2)); p2.x = 70*((i/2)+(i%2)) - 9;
+	p1.y = 70*((j/2)+(j%2))-1; p2.y = 70*((j/2)+(j%2)) -9;
 	draw_fill_rectangle(p1,p2,rouge);
 }
 
@@ -60,6 +65,12 @@ void affichePlateau(PLATEAU P)
 	{
 		for ( j = 0; j < 17; j++)
 		{
+			if ( P.pos[i][j] == 5) //caseaccessible par un pion
+			{
+				p1.x = 70*(i/2); p1.y = 70*(j/2) ;
+				p2.x = 70*(i/2) + 60; p2.y = 70*(j/2) + 60;
+				draw_fill_rectangle(p1, p2, vert);
+			}
 			if ( P.pos[i][j] == 4) //case n'ayant aucun pion
 			{
 				p1.x = 70*(i/2); p1.y = 70*(j/2) ;
@@ -74,7 +85,7 @@ void affichePlateau(PLATEAU P)
 				
 				p.x = (p1.x + p2.x)/2;
 				p.y = (p1.y + p2.y)/2;
-				draw_fill_circle(p,25,bleu);
+				draw_fill_circle(p,25,bleumarine);
 			}
 			if ( P.pos[i][j] == 2) //Case ayant le pion de J1
 			{
@@ -84,7 +95,7 @@ void affichePlateau(PLATEAU P)
 				
 				p.x = (p1.x + p2.x)/2;
 				p.y = (p1.y + p2.y)/2;
-				draw_fill_circle(p,25,vert);
+				draw_fill_circle(p,25,rouge);
 			}
 			if ( P.pos[i][j] == 1) //case ayant un mur 
 			{
@@ -92,6 +103,8 @@ void affichePlateau(PLATEAU P)
 					afficheMur_h(i,j);
 				if ( (i%2 == 1) && (j%2 == 0)) //cas mur vertical
 					afficheMur_v(i,j);
+				if ( (i%2 == 1) && (j%2 == 1)) 
+					afficheMur_c(i,j);
 			}
 			if ( P.pos[i][j] == 0); //aucun mur (on ne fait rien)
 			
@@ -100,24 +113,32 @@ void affichePlateau(PLATEAU P)
 	}
 }
 
-//## Affiche les données ##//
+//## Affiche les données ##// (mur, qui doit jouer, retour en arrière)
 void afficheData(JOUEUR J1, JOUEUR J2)
 {
 	POINT P, p1, p2;
-	p1.x = 620; p1.y = 0;
+	p1.x = 625; p1.y = 0;
 	p2.x = WIDTH; p2.y = HEIGHT;
-	draw_fill_rectangle(p1,p2,noir);
+	draw_fill_rectangle(p1,p2,blanc);
 	
-	P.x = 640; P.y = 600;
-	aff_pol("MUR Joueur bleu : ", 18, P, bleu);
+	P.x = 640; P.y = 580;
+	aff_pol("MUR Joueur bleu : ", 18, P, bleumarine);
 	P.x = 810; 
-	aff_int(J2.mur, 18, P, bleu);
+	aff_int(J2.mur, 18, P, bleumarine);
 
-	P.x = 640; P.y = 150;
-	aff_pol("MUR Joueur vert : ", 18, P, vert);
-	P.x = 810; 
-	aff_int(J1.mur, 18, P, vert);
+	P.x = 635; P.y = 550;
+	aff_pol("MUR Joueur rouge : ", 18, P,rouge);
+	P.x = 815; 
+	aff_int(J1.mur, 18, P, rouge);
 
+	// Bouton retour
+	
+	p1.x = 660; p1.y = 150;
+	p2.x = 810; p2.y = 210;
+	draw_fill_rectangle(p1,p2,orange);
+	draw_rectangle(p1,p2,noir);
+	P.x = 690; P.y = 200;
+	aff_pol("Retour", 26, P,noir);
 }
 
 //## initialisations des Joueurs ##//
@@ -186,7 +207,130 @@ if ( (c > 560) && ( c <= 620)) return 16;
 return -1;
 }
 
+//## Fonction Anti-bloquage du joueur ##//
+int antiBloque(JOUEUR J, POINT P)
+{
+	return 0;
+	
+	
+}
+
+//## Gestion liste doublement chainée pour les retours en arrières ##//
+
+Liste init_liste()
+{
+	return NULL;
+}
+
+
+Liste ajout_debut(Liste l, PLATEAU P)
+{
+	Liste p;
+	p = malloc(sizeof(struct element));
+	
+	p->plt = P;
+	p->suiv = l;
+	
+	return p;
+}
+
+int taille(Liste l)
+{
+	if (l == NULL) return 0;
+	else return 1+ taille(l->suiv);
+}
+
+Liste supprimeDebut(Liste l, PLATEAU P)
+{	
+	if ( taille(l) == 1) return l;
+	else 
+	{
+		Liste p = l->suiv;
+		free(l);
+		return p;	
+	}
+}
+
+
 //## Action Joueur ##//
+
+PLATEAU saute_pion(JOUEUR J1,JOUEUR J2, PLATEAU P)
+{
+	//Cas 1
+		if ( (J2.i == J1.i+2) && (J1.j == J2.j) && P.pos[J1.i+3][J1.j] != 1)
+		{
+			P.pos[J1.i+4][J1.j] = 5;
+			
+		}
+		if ( (J2.i == J1.i+2) && (J1.j == J2.j) && P.pos[J1.i+3][J1.j] == 1)
+		{
+				P.pos[J1.i+2][J1.j+2] = 5;
+				P.pos[J1.i+2][J1.j-2] = 5;
+		}
+	//Cas 2	
+		if ( (J2.i == J1.i-2) && (J1.j == J2.j) && P.pos[J1.i-3][J1.j] != 1)
+		{
+			P.pos[J1.i-4][J1.j] = 5;
+			
+		}
+		if ( (J2.i == J1.i-2) && (J1.j == J2.j) && P.pos[J1.i-3][J1.j] == 1)
+		{
+				P.pos[J1.i-2][J1.j+2] = 5;
+				P.pos[J1.i-2][J1.j-2] = 5;
+		}
+	//Cas 3
+		if ( (J2.i == J1.i) && (J1.j+2 == J2.j) && P.pos[J1.i][J1.j+3] != 1)
+		{
+			P.pos[J1.i][J1.j+4] = 5;
+			
+		}
+		if ( (J2.i == J1.i) && (J1.j+2 == J2.j) && P.pos[J1.i][J1.j+3] == 1)
+		{
+				P.pos[J1.i+2][J1.j+2] = 5;
+				P.pos[J1.i-2][J1.j+2] = 5;
+		}
+	//Cas 4	
+		if ( (J2.i == J1.i) && (J1.j-2 == J2.j) && P.pos[J1.i][J1.j-3] != 1)
+		{
+			P.pos[J1.i][J1.j-4] = 5;
+			
+		}
+		if ( (J2.i == J1.i) && (J1.j+2 == J2.j) && P.pos[J1.i][J1.j-3] == 1)
+		{
+				P.pos[J1.i+2][J1.j-2] = 5;
+				P.pos[J1.i-2][J1.j-2] = 5;
+		}
+		
+	return P;
+}
+
+PLATEAU AccessJoueur ( JOUEUR J1,JOUEUR J2, PLATEAU P)
+{
+	P = saute_pion(J1, J2,P);
+	if ( (P.pos[J1.i+1][J1.j] != 1) )
+		P.pos[J1.i+2][J1.j] = 5;
+	
+	if ( (P.pos[J1.i-1][J1.j] != 1) )
+		P.pos[J1.i+2][J1.j] = 5;
+
+	if ( (P.pos[J1.i][J1.j+1] != 1) )
+	    P.pos[J1.i][J1.j-2] = 5;
+
+	if ( (P.pos[J1.i][J1.j-1] != 1) )
+		P.pos[J1.i][J1.j+2] = 5;
+	
+	
+	return P;
+}
+PLATEAU NoAccessJoueur ( JOUEUR J, PLATEAU P)
+{
+		P.pos[J.i+2][J.j] = 4;
+		P.pos[J.i+2][J.j] = 4;
+	    P.pos[J.i][J.j-2] = 4;
+		P.pos[J.i][J.j+2] = 4;
+	
+	return P;
+}
 
 PLATEAU jouer_1(JOUEUR *J, PLATEAU P)
 {
@@ -200,6 +344,7 @@ PLATEAU jouer_1(JOUEUR *J, PLATEAU P)
 		x = indiceTab(centre.x); 
 		y = indiceTab(centre.y);
 
+		// Placement de murs
 		if ( (x%2 == 1) && (y%2 == 0) && ((P.pos[x][y+2] != 1) && (P.pos[x][y+1] != 1)) && ((*J).mur > 0) ) 
 		{
 			P.pos[x][y] = 1;
@@ -216,38 +361,47 @@ PLATEAU jouer_1(JOUEUR *J, PLATEAU P)
 			(*J).mur -= 1;
 			coup = 0;
 		}
+		
+		// Déplacement du pion
 		if ( ((x == (*J).i+2) && (y == (*J).j) && (P.pos[(*J).i+1][y] != 1)) || ((x == (*J).i -2) && (y == (*J).j) && (P.pos[(*J).i-1][y] != 1)) 
 			|| ((y == (*J).j -2) && (x == (*J).i) && (P.pos[x][(*J).j-1] != 1)) || ((y == (*J).j +2) && (x == (*J).i) && (P.pos[x][(*J).j+1] != 1)) )
 		{
 			if ( (x == (*J).i+2) && (y == (*J).j) && (P.pos[x][y]  == 3) && (P.pos[x+1][y] != 1))
 			{
-			P.pos[x+2][y] = (*J).val;
 			P.pos[(*J).i][(*J).j] = 4; 
 			(*J).i += 4; (*J).j = y;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
 			coup = 0;
 			}
-			if ( (x == (*J).i-2) && (y == (*J).j) && (P.pos[x][y]  == 3) && (P.pos[x-1][y] != 1))
+			else if ( (x == (*J).i-2) && (y == (*J).j) && (P.pos[x][y]  == 3) && (P.pos[x-1][y] != 1))
 			{
-			P.pos[x-2][y] = (*J).val;
 			P.pos[(*J).i][(*J).j] = 4; 
-			(*J).i -= 2; (*J).j = y;
+			(*J).i -= 4; (*J).j = y;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
 			coup = 0;
 			}
-			if ( (x == (*J).i) && (y == (*J).j+2) && (P.pos[x][y]  == 3) && (P.pos[x][y+1] != 1))
+			else if ( (x == (*J).i) && (y == (*J).j+2) && (P.pos[x][y]  == 3) && (P.pos[x][y+1] != 1))
 			{
-			P.pos[x][y+2] = (*J).val;
 			P.pos[(*J).i][(*J).j] = 4; 
-			(*J).i = x; (*J).j = y+2;
+			(*J).i = x; (*J).j += 4;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
 			coup = 0;
 			}
-			if ( (x == (*J).i+2) && (y == (*J).j-2) && (P.pos[x][y]  == 3) && (P.pos[x][y-1] != 1))
+			else if ( (x == (*J).i) && (y == (*J).j-2) && (P.pos[x][y]  == 3) && (P.pos[x][y-1] != 1))
 			{
-			P.pos[x][y-2] = (*J).val;
 			P.pos[(*J).i][(*J).j] = 4; 
-			(*J).i = x; (*J).j = y-2;
+			(*J).i = x; (*J).j -= 4;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
 			coup = 0;
 			}
-			else
+			// Retour en arrière
+			
+			else if ( (centre.x < 810) && (centre.x > 660) && (centre.y < 210) && (centre.y > 150) )
+			{
+				supprimeDebut(l,l->plt);
+				coup = 0;
+			}
+			else 
 			{
 			P.pos[x][y] = (*J).val;
 			P.pos[(*J).i][(*J).j] = 4; // case ne contenant plus de pion
@@ -292,9 +446,33 @@ PLATEAU jouer_2(JOUEUR *J, PLATEAU P)
 		if ( ((x == (*J).i+2) && (y == (*J).j) && (P.pos[(*J).i+1][(*J).j] != 1)) || ((x == (*J).i -2) && (y == (*J).j) && (P.pos[(*J).i-1][(*J).j] != 1)) 
 			|| ((y == (*J).j -2) && (x == (*J).i) && (P.pos[(*J).i][(*J).j-1] != 1)) || ((y == (*J).j +2) && (x == (*J).i) && (P.pos[(*J).i][(*J).j+1] != 1)) )
 		{
-			if ( P.pos[x][y]  == 2)
+			if ( (x == (*J).i+2) && (y == (*J).j) && (P.pos[x][y]  == 2) && (P.pos[x+1][y] != 1))
 			{
-			;
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i += 4; (*J).j = y;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
+			coup = 0;
+			}
+			else if ( (x == (*J).i-2) && (y == (*J).j) && (P.pos[x][y]  == 2) && (P.pos[x-1][y] != 1))
+			{
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i -= 4; (*J).j = y;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
+			coup = 0;
+			}
+			else if ( (x == (*J).i) && (y == (*J).j+2) && (P.pos[x][y]  == 2) && (P.pos[x][y+1] != 1))
+			{
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i = x; (*J).j += 4;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
+			coup = 0;
+			}
+			else if ( (x == (*J).i) && (y == (*J).j-2) && (P.pos[x][y]  == 2) && (P.pos[x][y-1] != 1))
+			{
+			P.pos[(*J).i][(*J).j] = 4; 
+			(*J).i = x; (*J).j -= 4;
+			P.pos[(*J).i][(*J).j] = (*J).val; 
+			coup = 0;
 			}
 			else
 			{
@@ -323,52 +501,6 @@ int quiGagne(JOUEUR J1, JOUEUR J2)
 
 }
 
-//## Gestion liste doublement chainée pour les retours en arrières ##//
-
-ListeP init_liste(ListeP *l)
-{
-	l->debut = NULL;
-	l->fin = NULL;
-	return *l;
-}
-
-// On ajoute le plateau de jeu au début de la liste
-// car cela prend moins de temps puis pour le retour en arrière 
-// on supprime le plateau en debut de liste et on va sur la plateau 
-// suivant qui correspond au tour précedent.
-ListeP ajoutFin(ListeP l, PLATEAU P)		
-{
-	Liste a = malloc(sizeof(struct element));
-	if ( l.debut == NULL)
-	{
-	l.debut->plt = P;
-	l.debut->suiv = NULL;
-	l.debut->prec = NULL;
-	l.fin = l.debut;
-	return l;
-	
-	}
-	else
-	{
-	a->plt = P;
-	a->suiv = NULL;
-	a->prec = l.fin;
-	l.fin = a;
-	return l;
-	}
-}
-
-ListeP supprimeFin(ListeP l)
-{
-	if (l.fin == NULL) return l;
-	else
-	{
-		l.fin = l.fin->prec;
-		l.fin->suiv = NULL;
-		free(l.fin);
-		return l;
-	}
-}
 
 
 int main()
@@ -376,47 +508,54 @@ int main()
 	init_graphics(850, 620); // initialisation de la fenetre graphique
 	fill_screen(gris);
 	
+	
+	
 	int a_qui_de_jouer, i;
 	JOUEUR J1, J2;
+		
 
-	// Debut :
+	// Initialisation :
 	P = initPlateau();
 	J1 = init_joueur1();
 	J2 = init_joueur2();
-	//P.pos[4][7] = 1;
+	l = init_liste();
 	
-	affichePlateau(P);
+	
+	l = ajout_debut(l, P);
+	affichePlateau(l->plt);
 	afficheData(J1,J2);
 	
 	//jeu :
-	a_qui_de_jouer = 1;	
-
 	POINT p;
-	p.x = 635; p.y = 370; 
+	p.x = 630; p.y = 370; 
+	a_qui_de_jouer = alea_int(2);	
 
 for (i = 0; quiGagne(J1,J2) == 0 ; i ++ ) 
 {
-	
 	if ( a_qui_de_jouer == 0)
 	{
-		aff_pol("C'est au tour de VERT", 18, p, vert);
-		P = jouer_1(&J1, P);		
+		aff_pol("C'est au tour de ROUGE", 18, p, rouge);
+		
+		P = jouer_1(&J1, P);
+		l = ajout_debut(l, P);		
 	}
 	if ( a_qui_de_jouer == 1)
 	{
 		aff_pol("C'est au tour de BLEU", 18, p, bleu);
 		P = jouer_2(&J2, P);
+		l = ajout_debut(l, P);
 	}
 
-	affichePlateau(P);
+	affichePlateau(l->plt);
 	afficheData(J1, J2);
-
 	a_qui_de_jouer = 1 - a_qui_de_jouer;
 	
 }	
 
-	if ( quiGagne(J1,J2) == 3) aff_pol("C'est BLEU qui GAGNE", 18, p, jaune);
-	if ( quiGagne(J1,J2) == 2) aff_pol("C'est VERT qui GAGNE", 18, p, jaune);
+	//Annonce du gagnant
+	
+	if ( quiGagne(J1,J2) == 3) aff_pol("C'est BLEU qui gagne", 18, p, orange);
+	if ( quiGagne(J1,J2) == 2) aff_pol("C'est ROUGE qui gagne", 18, p, orange);
 
 	
 	
